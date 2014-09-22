@@ -1,0 +1,15 @@
+* Pre-reqs
+- Recent version of GHC. I'm using 7.8.2
+- Recent version of Cabal. I'm using 1.20.0.2
+* Setup
+- Cabal update (Scotty is a bit fast moving)
+- Make the directory where our project will live.
+  - make sub-directory called src in this dir.
+- Make a file called Main.hs with the main function in it inside src.
+- Cd into the project directory
+- run: cabal init
+  - Take defaults except for the Library | Executable question. Pick Executable.
+  - Modify your .cabal file to include the following in the Executable section
+    - hs-source-dirs: src
+* Running
+Your application should now build (cabal build) and run (cabal run)
