@@ -4,13 +4,16 @@ module Main where
 import Web.Scotty
 
 import Config.Conf
+import Config.Logger
 
 main :: IO ()
 main = do
   config <- load configFiles
-  httpConf <- httpConfig config
+  myConf <- myConfig config
 
-  scotty (hcPort httpConf) $
-         get "/:word" $ do
-           word <- param "word"
-           text word
+  scotty (hcPort myConf) $ do
+    middleware $ logger (hcEnvironment myConf)
+
+    get "/:word" $ do
+         word <- param "word"
+         text word

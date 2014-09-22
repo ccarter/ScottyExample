@@ -1,9 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Config.Conf
-    ( HttpConfig(..)
+    ( MyConfig(..)
+    , Environment(..)
     , configFiles
-    , httpConfig
+    , myConfig
     , C.load
     )
 where
@@ -12,13 +13,22 @@ import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as CT
 
 type Port = Int
-data HttpConfig = HttpConfig { hcPort :: Port }
+data MyConfig = MyConfig { hcPort :: Port
+                         , hcEnvironment :: Environment }
+
+data Environment = Development | Other
 
 configFiles :: [C.Worth FilePath]
 configFiles = [C.Required "config/config.cfg"]
 
-httpConfig :: CT.Config -> IO HttpConfig
-httpConfig c = do
-  let config = C.subconfig "http" c
-  port <- C.require config "port"
-  return $ HttpConfig port
+myConfig :: CT.Config -> IO MyConfig
+myConfig c = do
+  let httpConfig = C.subconfig "http" c
+  env' <- C.require c "environment"
+  port <- C.require httpConfig "port"
+  return $ MyConfig port (env env')
+
+env :: String -> Environment
+env e = case e of
+          "development" -> Development
+          _ -> Other
