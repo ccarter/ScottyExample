@@ -7,20 +7,20 @@ module Http.Routes
 import Data.Monoid ((<>))
 import Web.Scotty
 
+import Http.Params
+
 routes :: ScottyM ()
 routes = do
   get "/route1" $ do
-           fooParam <- param "foo"
-           text fooParam
+           fooParam <- fooA
+           text $ showParamText fooParam
 
   get "/route2" $ do
-           fooParam <- param "foo"
-           limit <- param "limit"
-           offset <- param "offset"
-           text $ fooParam <> limit <> offset
+           fooParam <- fooA
+           pagination <- paginationA
+           text $ showParamText fooParam <> showParamText pagination
 
   get "/route3" $ do
-           fooParam <- param "foo"
-           limit <- param "limit"
-           offset <- param "offset"
-           text $ fooParam <> limit <> offset
+           fooParam <- fooA
+           pagination <- paginationA
+           text $ showParamText fooParam <> showParamText pagination
