@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 
 module Http.Routes
     ( routes
@@ -7,7 +7,9 @@ module Http.Routes
 import Data.Monoid ((<>))
 import Web.Scotty
 
+import Data
 import Http.Params
+
 
 routes :: ScottyM ()
 routes = do
@@ -24,3 +26,7 @@ routes = do
            fooParam <- fooA
            pagination <- paginationA
            text $ showParamText fooParam <> showParamText pagination
+
+  post "/postJson" $ do
+           fooBar :: Person <- jsonData
+           json fooBar

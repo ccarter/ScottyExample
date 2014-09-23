@@ -25,6 +25,7 @@ executable ScottyExample
                      , wai-extra
                      , wai
                      , text
+                     , aeson
   hs-source-dirs: src
   default-language:    Haskell2010
   ghc-options:         -Wall
