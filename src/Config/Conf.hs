@@ -1,13 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Config.Conf
-    ( MyConfig(..)
+    ( DbName(..)
+    , MyConfig(..)
     , Environment(..)
     , HttpConfig(..)
     , EkgConfig(..)
-    , configFiles
-    , myConfig
-    , C.load
+    , loadMyConfig
     )
 where
 
@@ -16,19 +15,26 @@ import qualified Data.Configurator.Types as CT
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 
+
+newtype DbName = DbName T.Text
 type Port = Int
+
 data HttpConfig = HttpConfig { hcPort :: Port }
+
 data EkgConfig = EkgConfig { ecHost :: BS.ByteString
                            , ecPort :: Port }
+
 data Environment = Development | Other
 
 data MyConfig = MyConfig { mcHttp :: HttpConfig
                          , mcEkg :: EkgConfig
                          , mcEnvironment :: Environment
-                         , mcDbName :: T.Text}
+                         , mcDbName :: DbName }
 
-configFiles :: [C.Worth FilePath]
-configFiles = [C.Required "config/config.cfg"]
+loadMyConfig :: FilePath -> IO MyConfig
+loadMyConfig filePath = do
+  config <- C.load [C.Required filePath]
+  myConfig config
 
 myConfig :: CT.Config -> IO MyConfig
 myConfig c = do
@@ -36,7 +42,7 @@ myConfig c = do
   ekgConf <- ekgConfig c
   env' <- C.require c "environment"
   dbName <- C.require c "dbName"
-  return $ MyConfig httpConf ekgConf (env env') dbName
+  return $ MyConfig httpConf ekgConf (env env') (DbName dbName)
 
 httpConfig :: CT.Config -> IO HttpConfig
 httpConfig c = do

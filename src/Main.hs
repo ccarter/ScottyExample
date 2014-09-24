@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Control.Monad (void)
@@ -14,16 +13,19 @@ import Http.Routes
 
 main :: IO ()
 main = do
-  config <- load configFiles
-  myConf <- myConfig config
-  let httpConfig = mcHttp myConf
-  let ekgConfig = mcEkg myConf
-  let dbName = mcDbName myConf
+  myConf <- loadMyConfig "config/config.cfg"
+  startEkg (mcEkg myConf)
+  migrateDb' (mcDbName myConf)
+  startApp myConf
 
-  runReaderT migrateDb dbName
+startEkg :: EkgConfig -> IO ()
+startEkg ekgConfig = void $ forkServer (ecHost ekgConfig) (ecPort ekgConfig)
 
-  void $ forkServer (ecHost ekgConfig) (ecPort ekgConfig)
+migrateDb' :: DbName -> IO ()
+migrateDb' = runReaderT migrateDb
 
-  scotty (hcPort httpConfig) $ do
-    middleware $ logger (mcEnvironment myConf)
-    routes dbName
+startApp :: MyConfig -> IO ()
+startApp myConf =
+    scotty (hcPort (mcHttp myConf)) $ do
+      middleware $ logger (mcEnvironment myConf)
+      routes (mcDbName myConf)

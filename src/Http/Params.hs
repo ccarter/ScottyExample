@@ -2,8 +2,6 @@
 
 module Http.Params
     ( Pagination (..)
---    , Limit
---    , Offset
     , paginationA
     , fooA
     , showParamText

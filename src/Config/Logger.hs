@@ -1,4 +1,6 @@
 module Config.Logger
+    (logger
+    )
 where
 
 import Network.Wai (Middleware)

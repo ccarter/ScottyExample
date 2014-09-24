@@ -1,20 +1,20 @@
-{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Http.Routes
     ( routes
     ) where
 
-import Data.Monoid ((<>))
-import qualified Data.Text as T
-import Web.Scotty
-
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (runReaderT)
+import Data.Monoid ((<>))
+import Web.Scotty
+
+import Config.Conf (DbName(..))
 import Database.Queries
 import Http.Params
 
 
-routes :: T.Text -> ScottyM ()
+routes :: DbName -> ScottyM ()
 routes dbName = do
   get "/route1" $ do
            fooParam <- fooA
