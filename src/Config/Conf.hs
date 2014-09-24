@@ -14,6 +14,7 @@ where
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as CT
 import qualified Data.ByteString as BS
+import qualified Data.Text as T
 
 type Port = Int
 data HttpConfig = HttpConfig { hcPort :: Port }
@@ -23,7 +24,8 @@ data Environment = Development | Other
 
 data MyConfig = MyConfig { mcHttp :: HttpConfig
                          , mcEkg :: EkgConfig
-                         , mcEnvironment :: Environment }
+                         , mcEnvironment :: Environment
+                         , mcDbName :: T.Text}
 
 configFiles :: [C.Worth FilePath]
 configFiles = [C.Required "config/config.cfg"]
@@ -33,7 +35,8 @@ myConfig c = do
   httpConf <- httpConfig c
   ekgConf <- ekgConfig c
   env' <- C.require c "environment"
-  return $ MyConfig httpConf ekgConf (env env')
+  dbName <- C.require c "dbName"
+  return $ MyConfig httpConf ekgConf (env env') dbName
 
 httpConfig :: CT.Config -> IO HttpConfig
 httpConfig c = do

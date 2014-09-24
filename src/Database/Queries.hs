@@ -7,6 +7,7 @@ module Database.Queries
 where
 
 import Control.Monad.Logger
+import Control.Monad.Reader
 import Control.Monad.Trans.Resource (runResourceT, ResourceT)
 import qualified Data.Text as T
 import Database.Persist.Sqlite
@@ -15,18 +16,21 @@ import Database.Models
 
 
 type DbName = T.Text
+type DbAction = ReaderT DbName IO
 
-persons :: DbName ->  IO [Entity Person]
-persons dbName = runDb dbName $ selectList [] []
+persons :: DbAction [Entity Person]
+persons = runDb $ selectList [] []
 
-personsByFirstName :: DbName -> T.Text -> IO [Entity Person]
-personsByFirstName dbName fn = runDb dbName $ selectList [PersonFirstName ==. fn] [Desc PersonFirstName]
+personsByFirstName :: T.Text -> DbAction [Entity Person]
+personsByFirstName fn = runDb $ selectList [PersonFirstName ==. fn] [Desc PersonFirstName]
 
-insertPerson :: DbName -> Person -> IO (Key Person)
-insertPerson dbName person = runDb dbName $ insert person
+insertPerson :: Person -> DbAction (Key Person)
+insertPerson person = runDb $ insert person
 
-runDb :: DbName -> SqlPersistT (ResourceT (NoLoggingT IO)) a -> IO a
-runDb dbName query = runNoLoggingT . runResourceT . withSqliteConn dbName . runSqlConn $ query
+runDb :: SqlPersistT (ResourceT (NoLoggingT IO)) a -> DbAction a
+runDb query = do
+  dbName <- ask
+  liftIO $ runNoLoggingT . runResourceT . withSqliteConn dbName . runSqlConn $ query
 
-migrateDb :: DbName -> IO ()
-migrateDb dbName = runDb dbName $ runMigration migrateAll
+migrateDb :: DbAction ()
+migrateDb = runDb $ runMigration migrateAll

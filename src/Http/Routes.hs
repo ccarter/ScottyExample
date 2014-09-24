@@ -5,15 +5,17 @@ module Http.Routes
     ) where
 
 import Data.Monoid ((<>))
+import qualified Data.Text as T
 import Web.Scotty
 
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Reader (runReaderT)
 import Database.Queries
 import Http.Params
 
 
-routes :: ScottyM ()
-routes = do
+routes :: T.Text -> ScottyM ()
+routes dbName = do
   get "/route1" $ do
            fooParam <- fooA
            text $ showParamText fooParam
@@ -30,9 +32,9 @@ routes = do
 
   post "/persons" $ do
            person <- jsonData
-           person' <- liftIO $ insertPerson "testdb.db3" person
+           person' <- liftIO $ runReaderT (insertPerson person) dbName
            json person'
 
   get "/persons" $ do
-           persons' <- liftIO $ persons "testdb.db3"
+           persons' <- liftIO $ runReaderT persons dbName
            json persons'
