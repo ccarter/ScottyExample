@@ -7,6 +7,7 @@ import Web.Scotty
 
 import Config.Conf
 import Config.Logger
+import Database.Queries (migrateDb)
 import Http.Routes
 
 main :: IO ()
@@ -15,6 +16,8 @@ main = do
   myConf <- myConfig config
   let httpConfig = mcHttp myConf
   let ekgConfig = mcEkg myConf
+
+  migrateDb "testdb.db3"
 
   void $ forkServer (ecHost ekgConfig) (ecPort ekgConfig)
 

@@ -29,6 +29,12 @@ executable ScottyExample
                      , ekg
                      , ekg-core
                      , bytestring
+                     , persistent
+                     , persistent-sqlite == 1.3.0.5
+                     , persistent-template
+                     , resourcet
+                     , monad-logger
+                     , transformers
 
   hs-source-dirs: src
   default-language:    Haskell2010

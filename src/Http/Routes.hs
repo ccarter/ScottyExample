@@ -7,7 +7,8 @@ module Http.Routes
 import Data.Monoid ((<>))
 import Web.Scotty
 
-import Data
+import Control.Monad.IO.Class (liftIO)
+import Database.Queries
 import Http.Params
 
 
@@ -27,6 +28,11 @@ routes = do
            pagination <- paginationA
            text $ showParamText fooParam <> showParamText pagination
 
-  post "/postJson" $ do
-           fooBar :: Person <- jsonData
-           json fooBar
+  post "/persons" $ do
+           person <- jsonData
+           person' <- liftIO $ insertPerson "testdb.db3" person
+           json person'
+
+  get "/persons" $ do
+           persons' <- liftIO $ persons "testdb.db3"
+           json persons'
