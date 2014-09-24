@@ -1,26 +1,43 @@
+\newpage
+* Purpose
+  The purpose of this repository is for users somewhat new to Haskell to have an idea
+  of how to go about creating a basic HTTP service with the following features:
+  - Basic HTTP concepts (routing, serving requests)
+  - Configuration
+  - Database access
+  - Logging
+  - Monitoring
+  - Structuring a Haskell application
 * Pre-reqs
-- Recent version of GHC. I'm using 7.8.2
-- Recent version of Cabal. I'm using 1.20.0.2
-* Setup
+- Recent version of GHC. At the time of this project 7.8.2
+- Recent version of Cabal. At the time of this project 1.20.0.2
+* Setup (What I did before the first commit)
 - Cabal update
 - Make the directory where our project will live.
   - make sub-directory called src in this dir.
-- Make a file called Main.hs with the main function in it inside src. This is only temporary to get our project
-  compiling/running.
-  - module Main where
+- Make a file called Main.hs with the main function in it inside the src directory. This is only
+  temporary to get our project compiling/running.
 
-    main :: IO ()
-    main = putStrLn "wee"
+  #+BEGIN_SRC haskell
+     module Main where
 
-- Cd into the project directory
+     main :: IO ()
+     main = putStrLn "wee"
+  #+END_SRC
+
+- cd into the project directory
 - run: cabal init
   - Take defaults except for the Library | Executable question. Pick Executable.
   - Modify your .cabal file to include the following in the Executable section
     - hs-source-dirs: src
-- CRITICAL!: run (cabal sandbox init) This creates a sandbox that I can go more into if needed.
+- CRITICAL!: run (cabal sandbox init) This creates a sandbox.
 - Your application should now build (cabal build) and run (cabal run)
 * Scotty
 - Add scotty as a dependency in your .cabal
   -   build-depends:       base >=4.7 && <4.8
                          , scotty
 - Install scotty and it's dependencies (cabal install --only-dependencies)
+* Next
+If you want to see the path I took to get to the current state, I tried to keep
+the commits feature oriented, but there are some refactoring commits you may want to
+look at as well.

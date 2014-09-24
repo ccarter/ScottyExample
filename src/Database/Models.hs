@@ -22,15 +22,14 @@ Person
     firstName T.Text
     lastName T.Text
     address T.Text
-
 |]
 
 instance FromJSON Person where
     parseJSON (Object v) = do
                            fn <- v .: "firstName"
                            ln <- v .: "lastName"
-                           add <- v.: "address"
-                           return $ Person fn ln  add
+                           add <- v .: "address"
+                           return $ Person fn ln add
 
     parseJSON _ = mzero
 
