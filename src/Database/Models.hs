@@ -22,6 +22,7 @@ Person
     firstName T.Text
     lastName T.Text
     address T.Text
+    age Int Maybe
 |]
 
 instance FromJSON Person where
@@ -29,13 +30,14 @@ instance FromJSON Person where
                            fn <- v .: "firstName"
                            ln <- v .: "lastName"
                            add <- v .: "address"
-                           return $ Person fn ln add
+                           age <- v .:? "age"
+                           return $ Person fn ln add age
 
     parseJSON _ = mzero
 
 instance ToJSON Person where
-    toJSON (Person fname lname address) =
-        object ["firstName" .= fname, "lastName" .= lname, "address" .= address]
+    toJSON (Person fname lname address age) =
+        object ["firstName" .= fname, "lastName" .= lname, "address" .= address, "age" .= age]
 
 instance ToJSON a => ToJSON (Entity a) where
     toJSON (Entity k a) = object ["id" .= k, "value" .= toJSON a]
